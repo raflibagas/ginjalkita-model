@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 from flask_cors import CORS  # For handling cross-origin requests'
 import os
+from xgboost import XGBClassifier
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # This enables CORS for all routes and origins
@@ -16,8 +17,11 @@ def after_request(response):
 
 
 # Load the model
-with open('xgboost.pkl', 'rb') as f:
-    model = pickle.load(f)
+# with open('xgboost.pkl', 'rb') as f:
+#     model = pickle.load(f)
+
+model = XGBClassifier()
+model.load_model("xgboost_ckd_model.json")
 
 @app.route('/predict', methods=['POST', 'OPTIONS'])
 def predict():
@@ -90,4 +94,4 @@ def predict():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
